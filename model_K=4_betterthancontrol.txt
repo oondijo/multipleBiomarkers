@@ -1,0 +1,51 @@
+model
+	{
+for( i in 1 : N ) {
+	r[i] ~ dbin(p[i],1)
+a[i] <- alpha +  gamma[1]*biomarker[i,1] +  gamma[2]*biomarker[i,2] +  gamma[3]*biomarker[i,3] + gamma[4]*biomarker[i,4] + beta[1]*treatment[i,1] +  beta[2]*treatment[i,2] +  beta[3]*treatment[i,3] + beta[4]*treatment[i,4]
+b[i] <- delta[1,1]*treatment[i,1]*biomarker[i,1] +  delta[2,1]*treatment[i,2]*biomarker[i,1] +  delta[3,1]*treatment[i,3]*biomarker[i,1] + delta[4,1]*treatment[i,4]*biomarker[i,1]
+
+c[i] <- delta[1,2]*treatment[i,1]*biomarker[i,2] +   delta[2,2]*treatment[i,2]*biomarker[i,2] +  delta[3,2]*treatment[i,3]*biomarker[i,2] +  delta[4,2]*treatment[i,4]*biomarker[i,2] +  delta[1,3]*treatment[i,1]*biomarker[i,3] +  delta[2,3]*treatment[i,2]*biomarker[i,3] +  delta[3,3]*treatment[i,3]*biomarker[i,3] +  delta[4,3]*treatment[i,4]*biomarker[i,3] + delta[1,4]*treatment[i,1]*biomarker[i,4] +  delta[2,4]*treatment[i,2]*biomarker[i,4] +  delta[3,4]*treatment[i,3]*biomarker[i,4] +  delta[4,4]*treatment[i,4]*biomarker[i,4]
+
+temp1[i]<- exp(a[i]+b[i]+c[i])
+ temp2[i]<- 1+exp(a[i]+b[i]+c[i])
+ 
+p[i] <- temp1[i]/temp2[i]
+
+
+
+}
+
+
+
+alpha ~ dunif(-10,10)
+for(k in 1:K)
+{
+beta[k] ~ dunif(-10,10)
+gamma[k] ~ dunif(-10,10)
+
+for(l in 1:K)
+{
+delta[k,l] ~ dunif(-10,10)
+}
+
+}
+
+
+
+
+#keep track of posterior probability that each treatment is better than control for each possible biomarker subgroup
+#uses binary, e.g. profile (1,0,1) would be assigned element 1*2^0+0*2^1+1*2^2=5
+
+for(i in 1:16)
+{
+
+postprob_betterthancontrol[i,1]<-step(beta[1]+allprofiles[i,1]*delta[1,1]+allprofiles[i,2]*delta[1,2]+allprofiles[i,3]*delta[1,3]+allprofiles[i,4]*delta[1,4])
+postprob_betterthancontrol[i,2]<-step(beta[2]+allprofiles[i,1]*delta[2,1]+allprofiles[i,2]*delta[2,2]+allprofiles[i,3]*delta[2,3]+allprofiles[i,4]*delta[2,4])
+postprob_betterthancontrol[i,3]<-step(beta[3]+allprofiles[i,1]*delta[3,1]+allprofiles[i,2]*delta[3,2]+allprofiles[i,3]*delta[3,3]+allprofiles[i,4]*delta[3,4])
+postprob_betterthancontrol[i,4]<-step(beta[4]+allprofiles[i,1]*delta[4,1]+allprofiles[i,2]*delta[4,2]+allprofiles[i,3]*delta[4,3]+allprofiles[i,4]*delta[4,4])
+
+
+
+}
+}

@@ -1,0 +1,1 @@
+list(alpha=0,beta=c(0,0,0,0),gamma=c(0,0,0,0),delta=structure(.Data=c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),.Dim=c(4,4)))
